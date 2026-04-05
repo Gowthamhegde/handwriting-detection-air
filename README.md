@@ -1,4 +1,4 @@
-# Real-Time Air Writing Recognition System - HIGH ACCURACY VERSION
+# Real-Time Air Writing Recognition System
 
 Deep learning-powered air-writing recognition using enhanced CNN-BiLSTM and MediaPipe Hands.
 
@@ -29,18 +29,62 @@ This version includes major improvements for **85-95%+ accuracy**:
 - **Comprehensive Vocabulary**: 112 items (52 letters + 60 words)
 - **High Accuracy**: 85-95%+ with proper training (50-100 samples/word)
 
-## Installation
+## 🚀 Installation
+
+### Prerequisites
+- Python 3.8 or higher
+- Webcam
+- Windows/Linux/macOS
+
+### Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Gowthamhegde/handwriting-detection-air.git
+   cd handwriting-detection-air
+   ```
+
+2. **Create a virtual environment (recommended):**
+   ```bash
+   python -m venv venv
+   
+   # On Windows:
+   venv\Scripts\activate
+   
+   # On Linux/macOS:
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Dependencies
+- opencv-python >= 4.8.0 (camera/video processing)
+- mediapipe >= 0.10.0 (hand tracking)
+- tensorflow >= 2.13.0 (deep learning model)
+- numpy >= 1.23.0, < 2.0.0 (numerical operations)
+- scikit-learn >= 1.3.0 (data preprocessing)
+- pyttsx3 >= 2.90 (text-to-speech)
+- textblob >= 0.17.0 (spell checking)
+- matplotlib >= 3.7.0 (visualization)
+- scipy >= 1.10.0 (signal processing)
+
+## 🎮 Quick Start
+
+### 1. Setup Alphabet Folders (First Time Only)
 
 ```bash
-pip install -r requirements.txt
+python setup_alphabet_folders.py
 ```
 
-## Quick Start
+This creates the dataset folder structure for all letters and words.
 
-### 1. Collect Training Data
+### 2. Collect Training Data
 
 ```bash
-python data_collection.py
+python quick_collect.py
 ```
 
 - Enter your user ID
@@ -51,20 +95,6 @@ python data_collection.py
 - Press 'c' to clear and retry
 - Repeat for 50-100 samples per word
 
-### 1.5. Collect GARBAGE Data (IMPORTANT!)
-
-```bash
-python collect_garbage.py
-```
-
-- Collect 100-200 samples of invalid gestures:
-  - Random scribbles and meaningless movements
-  - Incomplete characters (started but not finished)
-  - Very short movements (dots, tiny lines)
-  - Erratic or shaky hand movements
-  - Accidental gestures
-- This dramatically improves recognition accuracy by teaching the model to reject invalid inputs
-
 **Comprehensive word list (112 items):**
 - **Uppercase letters (26)**: A-Z
 - **Lowercase letters (26)**: a-z
@@ -73,7 +103,7 @@ python collect_garbage.py
 - **4-letter words (15)**: book, door, hand, love, tree, star, moon, fish, bird, home, good, time, work, life, help
 - **5-letter words (10)**: apple, water, house, phone, happy, world, music, smile, heart, peace
 
-### 2. Train the Model
+### 3. Train the Model
 
 ```bash
 python model_training.py
@@ -81,19 +111,23 @@ python model_training.py
 
 This will:
 - Load all collected trajectories
-- Train CNN-LSTM model
+- Apply data augmentation (6x multiplication)
+- Train CNN-BiLSTM model with 6D features
 - Save best model as `air_writing_model.h5`
 - Generate training history plot
 
-### 3. Run Real-Time Recognition
+### 4. Run Real-Time Recognition
 
 ```bash
-python recognition_live.py
+python run_air_writing.py
 ```
 
-- Open your hand and write in the air
-- Close your hand to trigger recognition
+**How to use:**
+- Show your hand to the camera
+- Write in the air with your index finger
+- Close your hand (pinch thumb and index) to trigger recognition
 - The system will display and speak the recognized word
+- Press 'q' to quit
 
 ## 🏗️ Architecture
 
@@ -111,40 +145,38 @@ python recognition_live.py
 - **Optimizer**: Adam with learning rate scheduling
 - **Regularization**: Dropout (0.2-0.4) + BatchNormalization
 
-### Generate Architecture Diagrams
+## 📊 Key Modules
 
-```bash
-python architecture_diagram.py
-```
+- `setup_alphabet_folders.py` - Creates dataset folder structure
+- `quick_collect.py` - Interactive trajectory dataset builder
+- `model_training.py` - CNN-BiLSTM training pipeline with data augmentation
+- `run_air_writing.py` - Main application entry point
+- `fixed_word_recognition.py` - Real-time inference engine with hand tracking
 
-This generates:
-- `system_architecture.png` - Detailed architecture with all components
-- `system_architecture_simple.png` - Simplified flow diagram
-
-## Dataset Structure
+## 📁 Project Structure
 
 ```
-dataset/
-├── cat/
-│   ├── user1_sample_0.npy
-│   ├── user1_sample_1.npy
+handwriting-detection-air/
+├── dataset/                      # Training data (created after setup)
+│   ├── A/
+│   ├── B/
+│   ├── cat/
+│   ├── dog/
 │   └── ...
-├── dog/
-├── sun/
-├── GARBAGE/          # ← NEW: Invalid gesture samples
-│   ├── user1_garbage_0.npy
-│   ├── user1_garbage_1.npy
-│   └── ...
-└── ...
+├── air_writing_model.h5          # Trained model (created after training)
+├── label_encoder.npy             # Label encoder (created after training)
+├── training_history.png          # Training metrics plot
+├── english_dictionary.json       # Word dictionary for spell checking
+├── setup_alphabet_folders.py     # Setup dataset folders
+├── quick_collect.py              # Data collection tool
+├── model_training.py             # Model training script
+├── run_air_writing.py            # Main recognition application
+├── fixed_word_recognition.py     # Core recognition logic
+├── requirements.txt              # Python dependencies
+└── README.md                     # This file
 ```
 
-Each `.npy` file contains a normalized trajectory of shape (100, 2).
-
-### GARBAGE Class Benefits
-- **Reduces False Positives**: Rejects meaningless gestures
-- **Improves Accuracy**: Better discrimination between valid/invalid inputs
-- **Better UX**: Clear feedback when gestures aren't recognized
-- **Robustness**: Handles noise and accidental movements
+Each `.npy` file in the dataset contains a normalized trajectory of shape (100, 2).
 
 ## 📊 Performance Metrics
 
@@ -184,31 +216,30 @@ Each `.npy` file contains a normalized trajectory of shape (100, 2).
 4. Start with fewer words, add gradually
 5. Ensure consistent environment (lighting, background)
 
-## Modules
+## 🎨 Customization
 
-- `hand_tracking.py` - MediaPipe hand detection and tracking
-- `data_collection.py` - Interactive trajectory dataset builder
-- `collect_garbage.py` - Collect invalid gesture samples for robustness
-- `setup_garbage_class.py` - Setup and status check for GARBAGE class
-- `model_training.py` - CNN-LSTM training pipeline
-- `recognition_live.py` - Real-time inference with UI
-
-## 📚 Documentation
-
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed system architecture documentation
-  - Component architecture
-  - Data flow diagrams
-  - Model architecture details
-  - GARBAGE class system
-  - Performance optimization
-  - Troubleshooting guide
-
-## Customization
-
-To add new words, simply collect more data and retrain:
+To add new words, edit the word list in `quick_collect.py` and `fixed_word_recognition.py`:
 
 ```python
 words = ["hello", "world", "python", "code", "test"]
 ```
 
-Adjust model parameters in `model_training.py` for different accuracy/speed tradeoffs.
+Then collect data and retrain the model. Adjust model parameters in `model_training.py` for different accuracy/speed tradeoffs.
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest new features
+- Submit pull requests
+- Improve documentation
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 🙏 Acknowledgments
+
+- MediaPipe for hand tracking
+- TensorFlow for deep learning framework
+- OpenCV for computer vision utilities
