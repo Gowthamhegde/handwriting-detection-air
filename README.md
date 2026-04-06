@@ -151,7 +151,7 @@ python run_air_writing.py
 - `quick_collect.py` - Interactive trajectory dataset builder
 - `model_training.py` - CNN-BiLSTM training pipeline with data augmentation
 - `run_air_writing.py` - Main application entry point
-- `fixed_word_recognition.py` - Real-time inference engine with hand tracking
+- `fixed_word_recognition.py` - Real-time inference engine with hand tracker
 
 ## 📁 Project Structure
 
